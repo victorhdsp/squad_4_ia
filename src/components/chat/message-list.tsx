@@ -18,7 +18,7 @@ export function MessageList({ messages, isTyping }: MessageListProps) {
   return (
     <div className="space-y-4">
       {messages.map((message, index) => {
-        if (index != 110)
+        if (index != 0)
           return (
             <div
               key={message.id}
