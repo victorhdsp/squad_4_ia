@@ -4,20 +4,26 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { MessageList } from '@/components/chat/message-list';
 import { MessageInput } from '@/components/chat/message-input';
+import { get_text_in_gemini } from './api/gemini';
+import { prompt } from './prompts';
 
-interface Message {
-  id: number;
+
+export interface Message {
   text: string;
-  sender: 'user' | 'assistant';
+  sender: 'user' | 'model';
   timestamp: Date;
 }
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: 1,
+      text: prompt,
+      sender: "user",
+      timestamp: new Date()
+    },
+    {
       text: 'Olá! Como posso ajudar você hoje?',
-      sender: 'assistant',
+      sender: 'model',
       timestamp: new Date(),
     },
   ]);
@@ -32,13 +38,11 @@ function App() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputMessage.trim()) return;
 
     const newMessage: Message = {
-      id: messages.length + 1,
       text: inputMessage,
       sender: 'user',
       timestamp: new Date(),
@@ -48,16 +52,11 @@ function App() {
     setInputMessage('');
     setIsTyping(true);
 
-    setTimeout(() => {
+    (async () => {
+      const response = await get_text_in_gemini(newMessage, messages);
+      setMessages((prev) => [...prev, response]);
       setIsTyping(false);
-      const assistantResponse: Message = {
-        id: messages.length + 2,
-        text: 'Obrigado por sua mensagem! Como posso ajudar?',
-        sender: 'assistant',
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, assistantResponse]);
-    }, 2000);
+    })()
   };
 
   return (
@@ -65,7 +64,6 @@ function App() {
       <div className="min-h-screen bg-background">
         <div className="max-w-5xl mx-auto p-4">
           <div className="rounded-xl shadow-xl overflow-hidden border bg-card">
-            {/* Header */}
             <div className="p-4 flex items-center justify-between border-b">
               <div className="flex items-center gap-3">
                 <div className="relative">
@@ -84,13 +82,11 @@ function App() {
               <ThemeToggle />
             </div>
 
-            {/* Messages Container */}
             <div className="h-[600px] overflow-y-auto p-4 scrollbar-thin">
               <MessageList messages={messages} isTyping={isTyping} />
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Form */}
             <MessageInput
               value={inputMessage}
               onChange={setInputMessage}
