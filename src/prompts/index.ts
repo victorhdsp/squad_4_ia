@@ -1,8 +1,30 @@
 const company: string = "42 Rio";
-const values: string[] = ["respeito", "colaboração", "inovação", "equilíbrio"];
-const culture: string[] = ["dinâmica", "colaborativa", "focada em resultados"];
-const resources: string[] = ["Programa de Assistência ao Empregado (PAE)", "seguro saúde com cobertura para terapia", "licença médica", "workshops de bem-estar", "plataforma de saúde mental online"];
-const challenges: string[] = ["alta carga de trabalho", "prazos curtos", "pressão por metas", "dificuldade de comunicação", "trabalho remoto", "equilíbrio entre vida pessoal e profissional"];
+const values: string[] = [
+    "respeito", 
+    "colaboração", 
+    "inovação", 
+    "equilíbrio"
+];
+const culture: string[] = [
+    "dinâmica", 
+    "colaborativa", 
+    "focada em resultados"
+];
+const resources: string[] = [
+    "Programa de Assistência ao Empregado (PAE)", 
+    "seguro saúde com cobertura para terapia", 
+    "licença médica", 
+    "workshops de bem-estar", 
+    "plataforma de saúde mental online"
+];
+const challenges: string[] = [
+    "alta carga de trabalho", 
+    "prazos curtos", 
+    "pressão por metas", 
+    "dificuldade de comunicação", 
+    "trabalho remoto", 
+    "equilíbrio entre vida pessoal e profissional"
+];
 
 export function prompt() {
     return `
