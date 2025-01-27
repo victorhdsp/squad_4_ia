@@ -3,23 +3,29 @@ import { Bot, Sparkles } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { MessageList } from '@/components/chat/message-list';
 import { MessageInput } from '@/components/chat/message-input';
+import { prompt } from '../prompts';
+import { get_text_in_gemini } from '../api/gemini';
 
-interface Message {
-  id: number;
+export interface Message {
   text: string;
-  sender: 'user' | 'assistant';
+  sender: 'user' | 'model';
   timestamp: Date;
 }
 
 export function Chat() {
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: 1,
+      text: prompt,
+      sender: "user",
+      timestamp: new Date()
+    },
+    {
       text: 'Olá! Como posso ajudar você hoje?',
-      sender: 'assistant',
+      sender: 'model',
       timestamp: new Date(),
     },
   ]);
+
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -31,13 +37,11 @@ export function Chat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputMessage.trim()) return;
 
     const newMessage: Message = {
-      id: messages.length + 1,
       text: inputMessage,
       sender: 'user',
       timestamp: new Date(),
@@ -47,17 +51,13 @@ export function Chat() {
     setInputMessage('');
     setIsTyping(true);
 
-    setTimeout(() => {
+    (async () => {
+      const response = await get_text_in_gemini(newMessage, messages);
+      setMessages((prev) => [...prev, response]);
       setIsTyping(false);
-      const assistantResponse: Message = {
-        id: messages.length + 2,
-        text: 'Obrigado por sua mensagem! Como posso ajudar?',
-        sender: 'assistant',
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, assistantResponse]);
-    }, 2000);
+    })()
   };
+
 
   return (
     <div className="max-w-5xl mx-auto p-4">
