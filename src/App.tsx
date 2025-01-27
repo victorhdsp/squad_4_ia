@@ -17,7 +17,7 @@ export interface Message {
 function App() {
   const [messages, setMessages] = useState<Message[]>([
     {
-      text: prompt,
+      text: prompt(),
       sender: "user",
       timestamp: new Date()
     },
