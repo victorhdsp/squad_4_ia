@@ -6,6 +6,7 @@ import { Dashboard } from '@/pages/dashboard';
 import { Button } from '@/components/ui/button';
 import { Bot, BarChart } from 'lucide-react';
 import { get_text_in_gemini } from './api/gemini';
+import { prompt } from './prompts';
 
 
 export interface Message {
