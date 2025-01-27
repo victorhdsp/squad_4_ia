@@ -1,0 +1,99 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { Bot, Sparkles } from 'lucide-react';
+import { ThemeToggle } from '@/components/theme-toggle';
+import { MessageList } from '@/components/chat/message-list';
+import { MessageInput } from '@/components/chat/message-input';
+
+interface Message {
+  id: number;
+  text: string;
+  sender: 'user' | 'assistant';
+  timestamp: Date;
+}
+
+export function Chat() {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 1,
+      text: 'Olá! Como posso ajudar você hoje?',
+      sender: 'assistant',
+      timestamp: new Date(),
+    },
+  ]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputMessage.trim()) return;
+
+    const newMessage: Message = {
+      id: messages.length + 1,
+      text: inputMessage,
+      sender: 'user',
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, newMessage]);
+    setInputMessage('');
+    setIsTyping(true);
+
+    setTimeout(() => {
+      setIsTyping(false);
+      const assistantResponse: Message = {
+        id: messages.length + 2,
+        text: 'Obrigado por sua mensagem! Como posso ajudar?',
+        sender: 'assistant',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, assistantResponse]);
+    }, 2000);
+  };
+
+  return (
+    <div className="max-w-5xl mx-auto p-4">
+      <div className="rounded-xl shadow-xl overflow-hidden border bg-card">
+        {/* Header */}
+        <div className="p-4 flex items-center justify-between border-b">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Bot className="w-8 h-8 text-primary" />
+              <div className="absolute -top-1 -right-1">
+                <Sparkles className="w-4 h-4 text-yellow-500 animate-pulse" />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">Assistente Virtual</h1>
+              <p className="text-xs text-muted-foreground">
+                Sempre online para ajudar
+              </p>
+            </div>
+          </div>
+          <ThemeToggle />
+        </div>
+
+        {/* Messages Container */}
+        <div className="h-[600px] overflow-y-auto p-4 scrollbar-thin">
+          <MessageList messages={messages} isTyping={isTyping} />
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input Form */}
+        <MessageInput
+          value={inputMessage}
+          onChange={setInputMessage}
+          onSubmit={handleSendMessage}
+        />
+      </div>
+    </div>
+  );
+}
